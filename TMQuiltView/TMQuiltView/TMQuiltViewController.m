@@ -29,6 +29,7 @@
 @implementation TMQuiltViewController
 
 @synthesize quiltView = _quiltView;
+@synthesize headerView = _headerView;
 
 - (void)dealloc {
     [_quiltView release], _quiltView = nil;
@@ -36,12 +37,27 @@
     [super dealloc];
 }
 
-- (void)loadView {
-    _quiltView = [[TMQuiltView alloc] initWithFrame:CGRectZero];
+- (void)loadView
+{
+    CGRect statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    screenBounds.size.height = screenBounds.size.height - statusBarFrame.size.height;
+    
+    self.view = [[UIView alloc] initWithFrame: screenBounds];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    CGRect frame = self.view.frame;
+    
+    _quiltView = [[TMQuiltView alloc] initWithFrame:CGRectMake(0, SEGMENTED_CONTROL_HEIGHT, frame.size.width, frame.size.height - SEGMENTED_CONTROL_HEIGHT)];
     _quiltView.delegate = self;
     _quiltView.dataSource = self;
     _quiltView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    self.view = _quiltView;
+    
+    _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, SEGMENTED_CONTROL_HEIGHT)];
+    _headerView.backgroundColor = [UIColor blueColor];
+    _headerView.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
+    
+    [self.view addSubview:_quiltView];
+    [self.view addSubview:_headerView];
 }
 
 - (void)viewDidLoad
